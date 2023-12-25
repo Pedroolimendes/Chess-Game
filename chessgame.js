@@ -2,7 +2,7 @@ const chessBoardElement = document.querySelector('#chess-board')
 const positionElements = Array.from(chessBoardElement.children)
 let pieceSelected = false
 let chessPosition = Array(64)
-let auxiliarPiece = {}
+let pieceBuffer = {}
 let whiteDomain = []
 let blackDomain = []
 for(let x = 0; x < 64; x++){
@@ -13,15 +13,15 @@ for(let x = 0; x < 64; x++){
 function decideBehave(piece, possiblePositionElement, index){
     if(pieceSelected){
         pieceSelected = false
-        removeHighlightDomain(auxiliarPiece)
-        if(auxiliarPiece.findDomain().includes(possiblePositionElement)){
-            auxiliarPiece.occupyPosition(index)
+        removeHighlightDomain(pieceBuffer)
+        if(pieceBuffer.findDomain().includes(possiblePositionElement)){
+            pieceBuffer.occupyPosition(index)
         }
     } else {
         if(piece){
             pieceSelected = true
             highlightDomain(piece)
-            auxiliarPiece = piece
+            pieceBuffer = piece
         }
     }
 }
