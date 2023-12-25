@@ -9,6 +9,22 @@ for(let x = 0; x < 64; x++){
     chessPosition[x] = null
 }
 
+function inCheck(king){
+    if(king.isWhite){
+        for(let count = 0; count < blackDomain.length; count++){
+            if(blackDomain[count].findDomain().includes(positionElements[king.position])){
+                return true
+            }
+        }
+    } else {
+        for(let count = 0; count < whiteDomain.length; count++){
+            if(whiteDomain[count].findDomain().includes(positionElements[king.position])){
+                return true
+            }
+        }
+    }
+    return false
+}
 
 function decideBehave(piece, possiblePositionElement, index){
     if(pieceSelected){
@@ -54,7 +70,11 @@ class Piece{
         this.symbol = this.giveRightSymbol()
         positionElements[this.position].innerHTML = this.symbol
         chessPosition[this.position] = this
-        
+        if(this.isWhite){
+            whiteDomain.push(this)
+        } else {
+            blackDomain.push(this)
+        }
     }
 
     giveRightSymbol(){
@@ -62,6 +82,13 @@ class Piece{
     }
 
     occupyPosition(newPosition) {
+        if(chessPosition[newPosition]){
+            if(chessPosition[newPosition].isWhite){
+                whiteDomain.splice(newPosition, 1)
+            } else {
+                blackDomain.splice(newPosition, 1)
+            }
+        }
         positionElements[this.position].innerHTML = ''
         chessPosition[this.position] = null
         this.position = newPosition
@@ -540,6 +567,7 @@ let whitePawn8 = new Pawn(true, 48, false)
 for (let i = 0; i<64; i++) {
     positionElements[i].addEventListener('click', ()=>decideBehave(chessPosition[i], positionElements[i], i))
 }
+
 
 
 
