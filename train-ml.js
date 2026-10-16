@@ -12,6 +12,7 @@
 // 3. Ajusta os pesos com descida do gradiente (otimizador Adam) para que
 //    sigmoid(pesos · características) preveja esse resultado.
 // 4. Repete: os erros do neurônio aparecem nas partidas dele e corrigem os pesos.
+//    O treino usa as partidas de todas as gerações juntas (replay buffer).
 const { Worker, isMainThread, parentPort, workerData } = require('worker_threads')
 const fs = require('fs')
 const os = require('os')
@@ -158,6 +159,8 @@ async function main() {
     const generations = Number(process.argv[3]) || 3
     const started = Date.now()
     let w = null
+    const trainGames = []
+    const validationGames = []
 
     for (let generation = 1; generation <= generations; generation++) {
         const player = w ? 'o próprio neurônio (autojogo)' : 'o bot clássico'
@@ -171,11 +174,14 @@ async function main() {
         // partida são parecidas demais para ficar dos dois lados).
         games.sort(() => Math.random() - 0.5)
         const cut = Math.round(games.length * (1 - VALIDATION_SHARE))
-        const trainGames = games.slice(0, cut)
-        const validationGames = games.slice(cut)
+        // Replay buffer: treina com as partidas de todas as gerações, não só da
+        // última. Sem isso o neurônio "esquece" o que aprendeu antes e corrige
+        // demais (numa tentativa, a dama chegou a valer negativo na 3ª geração).
+        trainGames.push(...games.slice(0, cut))
+        validationGames.push(...games.slice(cut))
         const trainSet = toExamples(trainGames)
         const validationSet = toExamples(validationGames)
-        console.log(`Treinando com ${trainSet.X.length} posições (${validationSet.X.length} para validação)...`)
+        console.log(`Treinando com ${trainSet.X.length} posições de ${generation} geração(ões) (${validationSet.X.length} para validação)...`)
 
         w = train(trainSet.X, trainSet.y, w)
 
