@@ -181,7 +181,21 @@ const ChessAI = (() => {
         return bestMove
     }
 
-    return { evaluate, chooseMove, LEVELS }
+    // Avaliação para exibir (barra de avaliação): busca rasa seguida das capturas,
+    // do ponto de vista das brancas. `mate` é o número de lances até o mate
+    // (positivo = brancas dão mate) ou null.
+    function analyze(state, depth = 1, evaluateFn = evaluate) {
+        activeEvaluate = evaluateFn
+        const score = search(state, depth, -Infinity, Infinity, 0)
+        const white = state.whiteTurn ? score : -score
+        if (Math.abs(score) > MATE - 1000) {
+            const plies = MATE - Math.abs(score)
+            return { score: white, mate: Math.sign(white) * Math.max(1, Math.ceil(plies / 2)) }
+        }
+        return { score: white, mate: null }
+    }
+
+    return { evaluate, chooseMove, analyze, LEVELS }
 })()
 
 if (typeof module !== 'undefined') module.exports = ChessAI

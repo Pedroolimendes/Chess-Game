@@ -9,8 +9,11 @@
 <body>
     <main class="app">
         <header class="header">
-            <h1>Chess Game</h1>
-            <p class="subtitle">Divirta-se!</p>
+            <span class="logo" aria-hidden="true">♞&#xFE0E;</span>
+            <div>
+                <h1>Chess Game</h1>
+                <p class="subtitle">Jogue, reveja seus lances e enfrente dois bots diferentes</p>
+            </div>
         </header>
 
         <section class="game">
@@ -22,21 +25,42 @@
                     <span id="captured-by-black" class="captured-pieces"></span>
                 </div>
 
-                <div class="board-wrap">
-                    <div id="chess-board" role="grid" aria-label="Tabuleiro de xadrez"></div>
-
-                    <div id="promotion" class="overlay" hidden>
-                        <div class="dialog" role="dialog" aria-label="Promoção do peão">
-                            <p>Promover peão para:</p>
-                            <div id="promotion-choices" class="promotion-choices"></div>
-                        </div>
+                <div id="board-area" class="board-area">
+                    <div id="eval-bar" class="eval-bar" role="img" title="Avaliação do bot clássico (vantagem em peões)">
+                        <div id="eval-fill" class="eval-fill"></div>
+                        <span id="eval-label" class="eval-label"></span>
                     </div>
 
-                    <div id="game-over" class="overlay" hidden>
-                        <div class="dialog" role="dialog" aria-label="Fim de jogo">
-                            <h2 id="game-over-title"></h2>
-                            <p id="game-over-text"></p>
-                            <button id="play-again" class="btn btn-primary" type="button">Jogar novamente</button>
+                    <div id="board-wrap" class="board-wrap">
+                        <div id="chess-board" role="grid" aria-label="Tabuleiro de xadrez"></div>
+
+                        <div id="promotion" class="overlay" hidden>
+                            <div class="dialog" role="dialog" aria-label="Promoção do peão">
+                                <p>Promover peão para:</p>
+                                <div id="promotion-choices" class="promotion-choices"></div>
+                            </div>
+                        </div>
+
+                        <div id="resign-confirm" class="overlay" hidden>
+                            <div class="dialog" role="dialog" aria-labelledby="resign-title">
+                                <h2 id="resign-title">Conceder a partida?</h2>
+                                <p id="resign-text"></p>
+                                <div class="dialog-actions">
+                                    <button id="resign-cancel" class="btn" type="button">Cancelar</button>
+                                    <button id="resign-ok" class="btn btn-danger" type="button">Conceder</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="game-over" class="overlay" hidden>
+                            <div class="dialog" role="dialog" aria-labelledby="game-over-title">
+                                <h2 id="game-over-title"></h2>
+                                <p id="game-over-text"></p>
+                                <div class="dialog-actions">
+                                    <button id="review-game" class="btn" type="button">Rever partida</button>
+                                    <button id="play-again" class="btn btn-primary" type="button">Jogar novamente</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -45,44 +69,70 @@
                     <span class="captured-label">Brancas capturaram</span>
                     <span id="captured-by-white" class="captured-pieces"></span>
                 </div>
+
+                <div class="toolbar">
+                    <div class="nav" role="group" aria-label="Navegar pelos lances">
+                        <button id="nav-first" class="icon-btn" type="button" aria-label="Posição inicial" title="Posição inicial (Home)">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6l-6 6 6 6M7 6v12"/></svg>
+                        </button>
+                        <button id="nav-prev" class="icon-btn" type="button" aria-label="Lance anterior" title="Lance anterior (←)">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+                        </button>
+                        <button id="nav-next" class="icon-btn" type="button" aria-label="Próximo lance" title="Próximo lance (→)">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+                        </button>
+                        <button id="nav-last" class="icon-btn" type="button" aria-label="Lance atual" title="Lance atual (End)">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l6 6-6 6M17 6v12"/></svg>
+                        </button>
+                    </div>
+                    <button id="toggle-eval" class="chip" type="button" aria-pressed="true">Barra de avaliação</button>
+                </div>
             </div>
 
             <aside class="panel">
-                <h2>Partida</h2>
-                <div class="settings">
-                    <label>
-                        Modo
-                        <select id="mode">
-                            <option value="ai">Contra o computador</option>
-                            <option value="pvp">Dois jogadores</option>
-                        </select>
-                    </label>
-                    <label id="opponent-label">
-                        Oponente
-                        <select id="opponent">
-                            <option value="classic">Clássico (regras à mão)</option>
-                            <option value="ml">Neurônio (ML)</option>
-                        </select>
-                    </label>
-                    <label id="level-label">
-                        Dificuldade
-                        <select id="level">
-                            <option value="facil">Fácil</option>
-                            <option value="medio" selected>Médio</option>
-                            <option value="dificil">Difícil</option>
-                        </select>
-                    </label>
-                </div>
-                <details id="ml-info" class="ml-info" hidden>
-                    <summary>O que o neurônio aprendeu</summary>
-                    <p class="ml-hint">Valor de cada característica em peões (peão = 1). Ninguém escreveu esses números: eles saíram do treino com resultados de partidas.</p>
-                    <ul id="ml-weights" class="ml-weights"></ul>
-                </details>
-                <h2>Lances</h2>
-                <ol id="moves" class="moves"></ol>
+                <section class="panel-section">
+                    <h2>Partida</h2>
+                    <div class="settings">
+                        <label>
+                            Modo
+                            <select id="mode">
+                                <option value="ai">Contra o computador</option>
+                                <option value="pvp">Dois jogadores</option>
+                            </select>
+                        </label>
+                        <label id="opponent-label">
+                            Oponente
+                            <select id="opponent">
+                                <option value="classic">Clássico (regras à mão)</option>
+                                <option value="ml">Neurônio (ML)</option>
+                            </select>
+                        </label>
+                        <label id="level-label">
+                            Dificuldade
+                            <select id="level">
+                                <option value="facil">Fácil</option>
+                                <option value="medio" selected>Médio</option>
+                                <option value="dificil">Difícil</option>
+                            </select>
+                        </label>
+                    </div>
+                    <details id="ml-info" class="ml-info" hidden>
+                        <summary>O que o neurônio aprendeu</summary>
+                        <p class="ml-hint">Valor de cada característica em peões (peão = 1). Ninguém escreveu esses números: eles saíram do treino com resultados de partidas.</p>
+                        <ul id="ml-weights" class="ml-weights"></ul>
+                    </details>
+                </section>
+
+                <section class="panel-section moves-section">
+                    <h2>Lances</h2>
+                    <ol id="moves" class="moves"></ol>
+                    <p id="moves-empty" class="moves-empty">Nenhum lance ainda.</p>
+                </section>
+
                 <div class="actions">
                     <button id="undo" class="btn" type="button">Desfazer</button>
-                    <button id="restart" class="btn" type="button">Novo jogo</button>
+                    <button id="resign" class="btn btn-danger-outline" type="button">Conceder</button>
+                    <button id="restart" class="btn btn-primary" type="button">Novo jogo</button>
                 </div>
             </aside>
         </section>
