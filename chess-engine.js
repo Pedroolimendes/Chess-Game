@@ -286,7 +286,7 @@ const Chess = (() => {
     }
 
     return {
-        newGame, loadFEN, legalMoves, allLegalMoves, applyMove, isInCheck, findKing,
+        newGame, loadFEN, legalMoves, allLegalMoves, pseudoMoves, applyMove, isInCheck, findKing,
         getStatus, notation, squareName, perft
     }
 })()

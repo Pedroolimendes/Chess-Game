@@ -359,6 +359,38 @@ body {
     letter-spacing: 0.08em;
 }
 
+.settings {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.settings label {
+    display: grid;
+    gap: 4px;
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+.settings label[hidden] {
+    display: none;
+}
+
+.settings select {
+    padding: 9px 10px;
+    font: inherit;
+    color: var(--text);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.settings select:focus-visible {
+    outline: 2px solid #4da3ff;
+    outline-offset: 2px;
+}
+
 .moves {
     margin: 0;
     padding: 0;

@@ -48,6 +48,24 @@
             </div>
 
             <aside class="panel">
+                <h2>Partida</h2>
+                <div class="settings">
+                    <label>
+                        Modo
+                        <select id="mode">
+                            <option value="ai">Contra o computador</option>
+                            <option value="pvp">Dois jogadores</option>
+                        </select>
+                    </label>
+                    <label id="level-label">
+                        Dificuldade
+                        <select id="level">
+                            <option value="facil">Fácil</option>
+                            <option value="medio" selected>Médio</option>
+                            <option value="dificil">Difícil</option>
+                        </select>
+                    </label>
+                </div>
                 <h2>Lances</h2>
                 <ol id="moves" class="moves"></ol>
                 <div class="actions">
@@ -59,6 +77,7 @@
     </main>
 
     <script src="chess-engine.js"></script>
+    <script src="chess-ai.js"></script>
     <script src="chessgame.js"></script>
 </body>
 </html>

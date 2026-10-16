@@ -25,6 +25,12 @@ let selected
 let legalForSelected
 let pendingPromotion // lances de promoção aguardando a escolha da peça
 let status
+let thinking = false // o computador (pretas) está escolhendo o lance
+let aiTimer = null
+
+const modeSelect = document.querySelector('#mode')
+const levelSelect = document.querySelector('#level')
+const vsComputer = () => modeSelect.value === 'ai'
 
 const squareElements = []
 for (let i = 0; i < 64; i++) {
@@ -46,7 +52,29 @@ function glyphElement(type, white) {
     return span
 }
 
+function cancelAI() {
+    clearTimeout(aiTimer)
+    aiTimer = null
+    thinking = false
+}
+
+// Depois do lance das brancas, o computador joga de volta com as pretas.
+function maybePlayAI() {
+    const gameOn = status === 'playing' || status === 'check'
+    if (!vsComputer() || state.whiteTurn || !gameOn) return
+    thinking = true
+    render()
+    // O timeout deixa o navegador desenhar o lance antes da busca bloquear a thread.
+    aiTimer = setTimeout(() => {
+        const move = ChessAI.chooseMove(state, levelSelect.value)
+        thinking = false
+        aiTimer = null
+        play(move)
+    }, 80)
+}
+
 function newGame() {
+    cancelAI()
     state = Chess.newGame()
     history = []
     selected = null
@@ -62,7 +90,8 @@ function clearSelection() {
 }
 
 function onSquareClick(index) {
-    if (pendingPromotion || status === 'checkmate' || status === 'stalemate' || status === 'insufficient') return
+    if (thinking || pendingPromotion || status === 'checkmate' || status === 'stalemate' || status === 'insufficient') return
+    if (vsComputer() && !state.whiteTurn) return
 
     if (selected !== null) {
         const moves = legalForSelected.filter(move => move.to === index)
@@ -112,11 +141,15 @@ function play(move) {
     status = nextStatus
     clearSelection()
     render()
+    maybePlayAI()
 }
 
 function undo() {
     if (history.length === 0) return
+    cancelAI()
     state = history.pop().before
+    // Contra o computador, desfaz também a resposta dele para voltar à vez das brancas.
+    if (vsComputer() && !state.whiteTurn && history.length > 0) state = history.pop().before
     status = Chess.getStatus(state)
     pendingPromotion = null
     clearSelection()
@@ -125,6 +158,7 @@ function undo() {
 
 function statusMessage() {
     const side = state.whiteTurn ? 'brancas' : 'pretas'
+    if (thinking) return { text: 'Computador pensando…', tone: 'turn' }
     switch (status) {
         case 'check': return { text: `Xeque! Vez das ${side}`, tone: 'alert' }
         case 'checkmate': return { text: `Xeque-mate! As ${state.whiteTurn ? 'pretas' : 'brancas'} vencem`, tone: 'end' }
@@ -216,7 +250,8 @@ function render() {
     renderCaptured()
     renderMoves()
     renderGameOver()
-    document.querySelector('#undo').disabled = history.length === 0
+    document.querySelector('#undo').disabled = history.length === 0 || thinking
+    document.querySelector('#level-label').hidden = !vsComputer()
 }
 
 promotionElement.addEventListener('click', event => {
@@ -231,6 +266,7 @@ document.addEventListener('keydown', event => {
         render()
     }
 })
+modeSelect.addEventListener('change', newGame)
 document.querySelector('#undo').addEventListener('click', undo)
 document.querySelector('#restart').addEventListener('click', newGame)
 document.querySelector('#play-again').addEventListener('click', newGame)
