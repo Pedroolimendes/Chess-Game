@@ -112,7 +112,10 @@ const ChessAI = (() => {
         return score
     }
 
-    const evaluateForSide = state => (state.whiteTurn ? 1 : -1) * evaluate(state)
+    // Função de avaliação usada pela busca atual: a escrita à mão (padrão)
+    // ou a aprendida pelo neurônio de chess-ml.js.
+    let activeEvaluate = evaluate
+    const evaluateForSide = state => (state.whiteTurn ? 1 : -1) * activeEvaluate(state)
 
     function orderMoves(state, moves) {
         const scored = moves.map(move => {
@@ -157,8 +160,10 @@ const ChessAI = (() => {
         return best
     }
 
-    function chooseMove(state, level = 'medio') {
-        const { depth, noise } = LEVELS[level] || LEVELS.medio
+    // `level` é o nome de um nível ou um objeto { depth, noise }.
+    function chooseMove(state, level = 'medio', evaluateFn = evaluate) {
+        const { depth, noise } = typeof level === 'object' ? level : (LEVELS[level] || LEVELS.medio)
+        activeEvaluate = evaluateFn
         const moves = orderMoves(state, E.allLegalMoves(state))
         let bestMove = null
         let bestScore = -Infinity

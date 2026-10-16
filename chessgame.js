@@ -30,7 +30,9 @@ let aiTimer = null
 
 const modeSelect = document.querySelector('#mode')
 const levelSelect = document.querySelector('#level')
+const opponentSelect = document.querySelector('#opponent')
 const vsComputer = () => modeSelect.value === 'ai'
+const useNeuron = () => opponentSelect.value === 'ml'
 
 const squareElements = []
 for (let i = 0; i < 64; i++) {
@@ -66,7 +68,8 @@ function maybePlayAI() {
     render()
     // O timeout deixa o navegador desenhar o lance antes da busca bloquear a thread.
     aiTimer = setTimeout(() => {
-        const move = ChessAI.chooseMove(state, levelSelect.value)
+        const evaluate = useNeuron() ? ChessML.evaluate : ChessAI.evaluate
+        const move = ChessAI.chooseMove(state, levelSelect.value, evaluate)
         thinking = false
         aiTimer = null
         play(move)
@@ -252,6 +255,28 @@ function render() {
     renderGameOver()
     document.querySelector('#undo').disabled = history.length === 0 || thinking
     document.querySelector('#level-label').hidden = !vsComputer()
+    document.querySelector('#opponent-label').hidden = !vsComputer()
+    document.querySelector('#ml-info').hidden = !vsComputer() || !useNeuron()
+}
+
+function renderLearnedWeights() {
+    const weights = ChessML.getWeights()
+    const list = document.querySelector('#ml-weights')
+    const inPawns = weights.map(w => w / weights[0])
+    const largest = Math.max(...inPawns.map(Math.abs))
+    list.replaceChildren(...ChessML.FEATURES.map((name, j) => {
+        const item = document.createElement('li')
+        const label = document.createElement('span')
+        label.textContent = name
+        const value = document.createElement('span')
+        value.className = 'ml-value'
+        value.textContent = (inPawns[j] >= 0 ? '+' : '−') + Math.abs(inPawns[j]).toFixed(2)
+        const bar = document.createElement('span')
+        bar.className = 'ml-bar ' + (inPawns[j] >= 0 ? 'positive' : 'negative')
+        bar.style.width = (100 * Math.abs(inPawns[j]) / largest) + '%'
+        item.append(label, value, bar)
+        return item
+    }))
 }
 
 promotionElement.addEventListener('click', event => {
@@ -267,8 +292,10 @@ document.addEventListener('keydown', event => {
     }
 })
 modeSelect.addEventListener('change', newGame)
+opponentSelect.addEventListener('change', render)
 document.querySelector('#undo').addEventListener('click', undo)
 document.querySelector('#restart').addEventListener('click', newGame)
 document.querySelector('#play-again').addEventListener('click', newGame)
 
+renderLearnedWeights()
 newGame()

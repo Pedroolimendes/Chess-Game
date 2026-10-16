@@ -57,6 +57,13 @@
                             <option value="pvp">Dois jogadores</option>
                         </select>
                     </label>
+                    <label id="opponent-label">
+                        Oponente
+                        <select id="opponent">
+                            <option value="classic">Clássico (regras à mão)</option>
+                            <option value="ml">Neurônio (ML)</option>
+                        </select>
+                    </label>
                     <label id="level-label">
                         Dificuldade
                         <select id="level">
@@ -66,6 +73,11 @@
                         </select>
                     </label>
                 </div>
+                <details id="ml-info" class="ml-info" hidden>
+                    <summary>O que o neurônio aprendeu</summary>
+                    <p class="ml-hint">Valor de cada característica em peões (peão = 1). Ninguém escreveu esses números: eles saíram do treino com resultados de partidas.</p>
+                    <ul id="ml-weights" class="ml-weights"></ul>
+                </details>
                 <h2>Lances</h2>
                 <ol id="moves" class="moves"></ol>
                 <div class="actions">
@@ -78,6 +90,8 @@
 
     <script src="chess-engine.js"></script>
     <script src="chess-ai.js"></script>
+    <script src="chess-ml-weights.js"></script>
+    <script src="chess-ml.js"></script>
     <script src="chessgame.js"></script>
 </body>
 </html>

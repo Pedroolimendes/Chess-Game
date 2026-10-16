@@ -377,6 +377,8 @@ body {
 }
 
 .settings select {
+    width: 100%;
+    min-width: 0;
     padding: 9px 10px;
     font: inherit;
     color: var(--text);
@@ -390,6 +392,58 @@ body {
     outline: 2px solid #4da3ff;
     outline-offset: 2px;
 }
+
+.ml-info {
+    margin: -6px 0 18px;
+    padding: 10px 12px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 0.82rem;
+}
+
+.ml-info[hidden] {
+    display: none;
+}
+
+.ml-info summary {
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.ml-hint {
+    margin: 8px 0;
+    color: var(--muted);
+    line-height: 1.4;
+}
+
+.ml-weights {
+    display: grid;
+    gap: 7px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.ml-weights li {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 3px 8px;
+}
+
+.ml-value {
+    font-variant-numeric: tabular-nums;
+    color: var(--muted);
+}
+
+.ml-bar {
+    grid-column: 1 / -1;
+    height: 4px;
+    border-radius: 2px;
+}
+
+.ml-bar.positive { background: #5ec27a; }
+.ml-bar.negative { background: #e0675d; }
 
 .moves {
     margin: 0;
