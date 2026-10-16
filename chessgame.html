@@ -6,74 +6,59 @@
     <title>Chess Game</title>
     <link rel="stylesheet" href="chessgame.css">
 </head>
-<h1>Chess Game, Have fun!</h1>
 <body>
-    <div id="chess-board">
-        <div class="light-square"></div>
-        <div class="dark-square"></div>
-        <div class="light-square"></div>
-        <div class="dark-square"></div>
-        <div class="light-square"></div>
-        <div class="dark-square"></div>
-        <div class="light-square"></div>
-        <div class="dark-square"></div>
-        <div class="dark-square"></div>
-        <div class="light-square"></div>
-        <div class="dark-square"></div>
-        <div class="light-square"></div>
-        <div class="dark-square"></div>
-        <div class="light-square"></div>
-        <div class="dark-square"></div>
-        <div class="light-square"></div>
-        <div class="light-square"></div>
-        <div class="dark-square"></div>
-        <div class="light-square"></div>
-        <div class="dark-square"></div>
-        <div class="light-square"></div>
-        <div class="dark-square"></div>
-        <div class="light-square"></div>
-        <div class="dark-square"></div>
-        <div class="dark-square"></div>
-        <div class="light-square"></div>
-        <div class="dark-square"></div>
-        <div class="light-square"></div>
-        <div class="dark-square"></div>
-        <div class="light-square"></div>
-        <div class="dark-square"></div>
-        <div class="light-square"></div>
-        <div class="light-square"></div>
-        <div class="dark-square"></div>
-        <div class="light-square"></div>
-        <div class="dark-square"></div>
-        <div class="light-square"></div>
-        <div class="dark-square"></div>
-        <div class="light-square"></div>
-        <div class="dark-square"></div>
-        <div class="dark-square"></div>
-        <div class="light-square"></div>
-        <div class="dark-square"></div>
-        <div class="light-square"></div>
-        <div class="dark-square"></div>
-        <div class="light-square"></div>
-        <div class="dark-square"></div>
-        <div class="light-square"></div>
-        <div class="light-square"></div>
-        <div class="dark-square"></div>
-        <div class="light-square"></div>
-        <div class="dark-square"></div>
-        <div class="light-square"></div>
-        <div class="dark-square"></div>
-        <div class="light-square"></div>
-        <div class="dark-square"></div>
-        <div class="dark-square"></div>
-        <div class="light-square"></div>
-        <div class="dark-square"></div>
-        <div class="light-square"></div>
-        <div class="dark-square"></div>
-        <div class="light-square"></div>
-        <div class="dark-square"></div>
-        <div class="light-square"></div>
-    </div>
+    <main class="app">
+        <header class="header">
+            <h1>Chess Game</h1>
+            <p class="subtitle">Divirta-se!</p>
+        </header>
+
+        <section class="game">
+            <div class="board-column">
+                <div id="status" class="status" role="status" aria-live="polite"></div>
+
+                <div class="captured" aria-label="Peças capturadas pelas pretas">
+                    <span class="captured-label">Pretas capturaram</span>
+                    <span id="captured-by-black" class="captured-pieces"></span>
+                </div>
+
+                <div class="board-wrap">
+                    <div id="chess-board" role="grid" aria-label="Tabuleiro de xadrez"></div>
+
+                    <div id="promotion" class="overlay" hidden>
+                        <div class="dialog" role="dialog" aria-label="Promoção do peão">
+                            <p>Promover peão para:</p>
+                            <div id="promotion-choices" class="promotion-choices"></div>
+                        </div>
+                    </div>
+
+                    <div id="game-over" class="overlay" hidden>
+                        <div class="dialog" role="dialog" aria-label="Fim de jogo">
+                            <h2 id="game-over-title"></h2>
+                            <p id="game-over-text"></p>
+                            <button id="play-again" class="btn btn-primary" type="button">Jogar novamente</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="captured" aria-label="Peças capturadas pelas brancas">
+                    <span class="captured-label">Brancas capturaram</span>
+                    <span id="captured-by-white" class="captured-pieces"></span>
+                </div>
+            </div>
+
+            <aside class="panel">
+                <h2>Lances</h2>
+                <ol id="moves" class="moves"></ol>
+                <div class="actions">
+                    <button id="undo" class="btn" type="button">Desfazer</button>
+                    <button id="restart" class="btn" type="button">Novo jogo</button>
+                </div>
+            </aside>
+        </section>
+    </main>
+
+    <script src="chess-engine.js"></script>
     <script src="chessgame.js"></script>
 </body>
 </html>
